@@ -4,7 +4,7 @@ from sklearn.linear_model import LogisticRegression
 
 def build_voting_classifier(models: dict, voting: str = "soft"):
     estimators = [(name, clf) for name, clf in models.items()]
-    return VotingClassifier(estimators=estimators, voting=voting, n_jobs=-1)
+    return VotingClassifier(estimators=estimators, voting=voting, n_jobs=1)
 
 
 def build_stacking_classifier(models: dict):
@@ -13,6 +13,6 @@ def build_stacking_classifier(models: dict):
         estimators=estimators,
         final_estimator=LogisticRegression(max_iter=1000),
         cv=5,
-        n_jobs=-1,
+        n_jobs=1,
         passthrough=False,
     )

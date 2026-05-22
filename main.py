@@ -169,12 +169,15 @@ def display_results(results):
         with st.expander(f"{model_name} details", expanded=False):
             st.write("**Classification report**")
             st.text(eval_result["report"])
-            st.write(results["figures"][f"{model_name}_confusion_matrix"])
-            st.pyplot(results["figures"][f"{model_name}_confusion_matrix"])
-            st.write(results["figures"][f"{model_name}_roc_curve"])
-            st.pyplot(results["figures"][f"{model_name}_roc_curve"])
-            st.write(results["figures"][f"{model_name}_probability"])
-            st.pyplot(results["figures"][f"{model_name}_probability"])
+            fig = results["figures"][f"{model_name}_confusion_matrix"]
+            st.pyplot(fig)
+            plt.close(fig)
+            fig = results["figures"][f"{model_name}_roc_curve"]
+            st.pyplot(fig)
+            plt.close(fig)
+            fig = results["figures"][f"{model_name}_probability"]
+            st.pyplot(fig)
+            plt.close(fig)
 
     st.subheader("Ensemble Metrics")
     ensemble_metrics = []
@@ -192,12 +195,20 @@ def display_results(results):
         with st.expander(f"{model_name} ensemble details", expanded=False):
             st.write("**Classification report**")
             st.text(eval_result["report"])
-            st.pyplot(results["figures"][f"{model_name}_confusion_matrix"])
-            st.pyplot(results["figures"][f"{model_name}_roc_curve"])
-            st.pyplot(results["figures"][f"{model_name}_probability"])
+            fig = results["figures"][f"{model_name}_confusion_matrix"]
+            st.pyplot(fig)
+            plt.close(fig)
+            fig = results["figures"][f"{model_name}_roc_curve"]
+            st.pyplot(fig)
+            plt.close(fig)
+            fig = results["figures"][f"{model_name}_probability"]
+            st.pyplot(fig)
+            plt.close(fig)
 
     st.subheader("Ensemble ROC Comparison")
-    st.pyplot(results["figures"]["ensemble_comparison_roc"])
+    fig = results["figures"]["ensemble_comparison_roc"]
+    st.pyplot(fig)
+    plt.close(fig)
 
     st.subheader("Submission Download")
     csv_bytes = results["submission_df"].to_csv(index=False).encode("utf-8")
@@ -223,8 +234,12 @@ def main():
 
     if st.sidebar.button("Run pipeline"):
         with st.spinner("Running ensemble pipeline..."):
-            results = run_pipeline(data_dir, output_dir, cv, skip_outliers, save_outputs=save_outputs)
-            display_results(results)
+            try:
+                results = run_pipeline(data_dir, output_dir, cv, skip_outliers, save_outputs=save_outputs)
+                display_results(results)
+            except Exception as exc:
+                st.error("Pipeline execution failed. See exception details below.")
+                st.exception(exc)
 
     st.sidebar.markdown("---")
     st.sidebar.write(
