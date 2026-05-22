@@ -67,6 +67,7 @@ def save_figures_to_disk(figures_dict, output_dir: Path):
     for fig_name, fig in figures_dict.items():
         fig_path = output_dir / f"{fig_name}.png"
         fig.savefig(fig_path, dpi=100, bbox_inches='tight')
+        plt.close(fig)
         figures_paths[fig_name] = str(fig_path)
 
     return figures_paths
@@ -266,7 +267,11 @@ def cli_main(args=None):
 
 
 if __name__ == "__main__":
-    if is_streamlit_environment():
-        main()
+    import sys
+
+    # Streamlit does not always set STREAMLIT_SERVER_RUNNING, so always
+    # start the Streamlit UI when running via `streamlit run`.
+    if "--cli" in sys.argv:
+        cli_main(args=[arg for arg in sys.argv[1:] if arg != "--cli"])
     else:
-        cli_main()
+        main()
